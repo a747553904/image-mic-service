@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ddjf.image.mapper.EcmPageMapper" >
+  <resultMap id="BaseResultMap" type="com.ddjf.image.model.EcmPage" >
+    <result column="serialno" property="serialno" jdbcType="VARCHAR" />
+    <result column="objecttype" property="objecttype" jdbcType="VARCHAR" />
+    <result column="objectno" property="objectno" jdbcType="VARCHAR" />
+    <result column="typeno" property="typeno" jdbcType="VARCHAR" />
+    <result column="pageid" property="pageid" jdbcType="VARCHAR" />
+    <result column="documentid" property="documentid" jdbcType="VARCHAR" />
+    <result column="archivesid" property="archivesid" jdbcType="VARCHAR" />
+    <result column="bizarchivesid" property="bizarchivesid" jdbcType="VARCHAR" />
+    <result column="pagetype" property="pagetype" jdbcType="VARCHAR" />
+    <result column="pagename" property="pagename" jdbcType="VARCHAR" />
+    <result column="modifytime" property="modifytime" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="imageinfo" property="imageinfo" jdbcType="VARCHAR" />
+    <result column="operateuser" property="operateuser" jdbcType="VARCHAR" />
+    <result column="operatetime" property="operatetime" jdbcType="VARCHAR" />
+    <result column="operateorg" property="operateorg" jdbcType="VARCHAR" />
+    <result column="pagenum" property="pagenum" jdbcType="VARCHAR" />
+    <result column="sortno" property="sortno" jdbcType="VARCHAR" />
+    <result column="readflag" property="readflag" jdbcType="CHAR" />
+    <result column="pagecontent" property="pagecontent" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  
+  <select id="findList" parameterType="com.ddjf.image.model.EcmPage" resultMap="BaseResultMap">
+    select * from ecm_page t
+    <where>
+        <if test="objecttype != null and objecttype != ''">
+            AND t.objecttype = #{objecttype}
+        </if>
+        <if test="objectno != null and objectno != ''">
+            AND t.objectno = #{objectno}
+        </if>
+        <if test="pagetype != null and pagetype != ''">
+            AND t.pagetype = #{pagetype}
+        </if>
+        <if test="typeno != null and typeno != ''">
+            AND t.typeno in (${typeno})
+        </if>
+    </where>
+  </select>
+  
+  <select id="getEcmPageList" parameterType="com.ddjf.image.model.EcmPage" resultType="java.util.HashMap">
+    select t.SERIALNO,
+	       t.OBJECTTYPE,
+	       t.OBJECTNO,
+	       t.TYPENO,
+	       t.DOCUMENTID,
+	       t.PAGETYPE,
+	       t.PAGENAME,
+	       t.MODIFYTIME,
+	       t.OPERATEUSER,
+	       t.OPERATEORG,
+	       t.PAGENUM,
+	       t.SORTNO,
+	       t.READFLAG
+	  from ecm_page t
+    <where>
+        <if test="objecttype != null and objecttype != ''">
+            AND t.objecttype = #{objecttype}
+        </if>
+        <if test="objectno != null and objectno != ''">
+            AND t.objectno = #{objectno}
+        </if>
+        <if test="pagetype != null and pagetype != ''">
+            AND t.pagetype = #{pagetype}
+        </if>
+        <if test="typeno != null and typeno != ''">
+            AND t.typeno = #{typeno}
+        </if>
+    </where>
+    order by t.typeno, CAST(t.sortno AS SIGNED)
+  </select>
+  
+  <select  id="getImageList" parameterType="java.util.List" resultType="java.util.HashMap">
+    SELECT t.OBJECTNO, 
+           COUNT(*) TOTAL, 
+           SUM(CASE WHEN t.typeno = '99' THEN 1 ELSE 0 END) UNCLASSIFY, 
+           date_format(str_to_date(MAX(t.modifytime), '%Y/%m/%d %H:%i:%s'), '%Y-%m-%d %H:%i:%s') MODIFYTIME, 
+           SUM(CASE WHEN t.readflag = '1' THEN 1 ELSE 0 END) UNREADCOUNT
+	FROM ecm_page t
+	WHERE t.objecttype = 'CBCreditApply' AND t.pagetype = 'Image' AND t.objectno IN
+	<foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
+        #{item}  
+    </foreach>
+    GROUP BY t.objectno
+  </select>
+  
+  <select id="getBySerialno" parameterType="com.ddjf.image.model.EcmPage" resultMap="BaseResultMap">
+    select * from ecm_page t where t.serialno = #{serialno}
+  </select>
+  
+  <select id="getMaxPageNum" parameterType="com.ddjf.image.model.EcmPage" resultType="Integer">
+    select MAX(CAST(pagenum AS SIGNED)) max_pagenum from ecm_page where objectno=#{objectno} and objecttype=#{objecttype} and typeno=#{typeno}
+  </select>
+  
+  <select id="getMaxSortNo" parameterType="com.ddjf.image.model.EcmPage" resultType="Integer">
+    select MAX(CAST(sortno AS SIGNED)) max_sortno from ecm_page where objectno=#{objectno} and objecttype=#{objecttype}
+  </select>
+  
+  <insert id="insertEcmPage" parameterType="com.ddjf.image.model.EcmPage" >
+    INSERT INTO ecm_page (serialno,objecttype,objectno,typeno,pageid,documentid,archivesid,bizarchivesid,pagetype,pagename,modifytime,remark,imageinfo,operateuser,operatetime,operateorg,pagenum,sortno) 
+    VALUES (#{serialno},#{objecttype},#{objectno},#{typeno},#{pageid},#{documentid},#{archivesid},#{bizarchivesid},#{pagetype},#{pagename},#{modifytime},#{remark},#{imageinfo},#{operateuser},#{operatetime},#{operateorg},#{pagenum},#{sortno})
+  </insert>
+  
+  <update id="updateEcmPage" parameterType="com.ddjf.image.model.EcmPage" >
+    update ecm_page 
+    <set>
+        <if test="typeno != null and typeno != ''">
+            typeno = #{typeno},
+        </if>
+        <if test="sortno != null and sortno != ''">
+            sortno = #{sortno},
+        </if>
+        <if test="readflag != null and readflag != ''">
+            readflag = #{readflag},
+        </if>
+        <if test="documentid != null and documentid != ''">
+            documentid = #{documentid}
+        </if>
+    </set>
+    where serialno = #{serialno}
+  </update>
+
+    <update id="updateEcmPageRemarks" parameterType="com.ddjf.image.model.EcmPage" >
+        update ecm_page
+        <set>
+            remark = #{remark}
+        </set>
+        where documentid = #{documentid}
+    </update>
+  
+  <delete id="deleteEcmPage" parameterType="String">
+    delete from ecm_page where serialno = #{serialno}
+  </delete>
+  
+  <select id="getEcmPageTypeList" parameterType="String" resultType="java.util.HashMap">
+    select * from ecm_page_type t where t.typecategory like CONCAT('%', #{productType}, '%')
+  </select>
+  
+  
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration>
+<configuration debug="false" scan="false">
+    <contextName>SERVER</contextName>
+	<springProperty scope="context" name="logPath" source="log.path"/>
+    <springProperty scope="context" name="logName" source="log.name"/>
+
+    <!-- 控制台日志 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-5level [%contextName] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%logger{0}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- 滚动文件日志 -->
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${logPath}/${logName}.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${logPath}/${logName}-log-%d{yyyy-MM-dd}.zip</FileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%-5level [%contextName] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%logger{100}] - %msg%n</pattern>
+		</encoder>
+	</appender>
+    
+    <!--<root level="INFO">-->
+      <root  level="DEBUG" >
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--<properties resource="application.properties"/>-->
+
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.springboot.util.MyMapper"/>
+        </plugin>
+
+        <!--<jdbcConnection driverClass="${druid.driver-class}"-->
+                        <!--connectionURL="${druid.url}"-->
+                        <!--userId="${druid.username}"-->
+                        <!--password="${druid.password}">-->
+        <!--</jdbcConnection>-->
+
+
+        <javaModelGenerator targetPackage="tk.mybatis.springboot.model" targetProject="src/main/java"/>
+
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"/>
+
+        <javaClientGenerator targetPackage="tk.mybatis.springboot.mapper" targetProject="src/main/java"
+                             type="XMLMAPPER"/>
+
+        <!--<table tableName="%">-->
+            <!--&lt;!&ndash;mysql 配置&ndash;&gt;-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true"/>-->
+            <!--&lt;!&ndash;oracle 配置&ndash;&gt;-->
+            <!--&lt;!&ndash;<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>&ndash;&gt;-->
+        <!--</table>-->
+        <table tableName="t_role" domainObjectName="Role"/>
+        <table tableName="t_role_allocation" domainObjectName="RoleAllocation"/>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://10.234.6.132:3306/sso?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true"
+                        userId="sso"
+                        password="sso123">
+        </jdbcConnection>
+        <!--<javaModelGenerator targetPackage="com.wonhigh.o2o.ms.dal.database.model" targetProject="src\main\java" >-->
+            <!--&lt;!&ndash; 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false &ndash;&gt;-->
+            <!--<property name="enableSubPackages" value="true" />-->
+            <!--&lt;!&ndash; 设置是否在getter方法中，对String类型字段调用trim()方法 &ndash;&gt;-->
+            <!--<property name="trimStrings" value="true" />-->
+            <!--<property name="rootInterface" value="java.io.Serializable" />-->
+        <!--</javaModelGenerator>-->
+        <!--<sqlMapGenerator targetPackage="com.wonhigh.o2o.ms.dal.database.mapper" targetProject="src\main\java" >-->
+            <!--<property name="enableSubPackages" value="true" />-->
+        <!--</sqlMapGenerator>-->
+
+        <!--<javaClientGenerator type="XMLMAPPER" targetPackage="com.wonhigh.o2o.ms.dal.database" targetProject="src\main\java" >-->
+            <!--<property name="enableSubPackages" value="true" />-->
+            <!--<property name="interfaceExtendSupInterface" value="com.yougou.logistics.base.dal.database.BaseCrudMapper"/>-->
+            <!--<property name="enableInterfaceSupInterfaceGenericity" value="false"/>-->
+            <!--<property name="exclusionsMethods"-->
+                      <!--value="countByQuery,deleteByQuery,deleteByPrimaryKey,insert,insertSelective,selectByPrimaryKey,selectCount,selectByPage,updateByQuery,updateByPrimaryKeySelective"/>-->
+
+        <!--</javaClientGenerator>-->
+
+    </context>
+</generatorConfiguration>
